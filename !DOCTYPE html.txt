@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XchangeOn Arbitrage Demo Bot</title>
+  <style>
+    body {
+      background-color: #0e1a1a;
+      color: #00ffcc;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      color: #00ffaa;
+    }
+    .exchange-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .exchange-table th, .exchange-table td {
+      padding: 12px;
+      border: 1px solid #00ffaa;
+      text-align: center;
+    }
+    .btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #00ffaa;
+      border: none;
+      color: #0e1a1a;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .result-box {
+      margin-top: 20px;
+      padding: 15px;
+      border: 2px dashed #00ffaa;
+      background-color: #001010;
+    }
+  </style>
+</head>
+<body>
+  <h1>XchangeOn Arbitrage Demo Bot</h1>
+  <p>Simulated Price Feed | No real exchange connection</p>
+  <table class="exchange-table">
+    <thead>
+      <tr>
+        <th>Exchange</th>
+        <th>Price (USD)</th>
+      </tr>
+    </thead>
+    <tbody id="price-table"></tbody>
+  </table>
+  <button class="btn" onclick="checkArbitrage()">Simulate Trade</button>
+  <div class="result-box" id="result"></div>
+
+  <script>
+    const exchanges = ['Binance', 'KuCoin', 'Coinbase'];
+    let prices = {};
+
+    function generatePrices() {
+      prices = {
+        Binance: (1720 + Math.random() * 10).toFixed(2),
+        KuCoin: (1720 + Math.random() * 10).toFixed(2),
+        Coinbase: (1720 + Math.random() * 10).toFixed(2)
+      };
+      let html = '';
+      for (const ex of exchanges) {
+        html += `<tr><td>${ex}</td><td>$${prices[ex]}</td></tr>`;
+      }
+      document.getElementById('price-table').innerHTML = html;
+    }
+
+    function checkArbitrage() {
+      const minEx = Object.entries(prices).reduce((a, b) => parseFloat(a[1]) < parseFloat(b[1]) ? a : b);
+      const maxEx = Object.entries(prices).reduce((a, b) => parseFloat(a[1]) > parseFloat(b[1]) ? a : b);
+      const profit = (parseFloat(maxEx[1]) - parseFloat(minEx[1])).toFixed(2);
+
+      document.getElementById('result').innerHTML =
+        `Buy on <strong>${minEx[0]}</strong> at $${minEx[1]} <br>
+         Sell on <strong>${maxEx[0]}</strong> at $${maxEx[1]} <br>
+         <strong>Profit:</strong> $${profit}`;
+    }
+
+    generatePrices();
+    setInterval(generatePrices, 5000); // Refresh prices every 5 seconds
+  </script>
+</body>
+</html>
